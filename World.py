@@ -131,7 +131,6 @@ class World:
         x=int(player.x//1000)
         y=int(player.y//1000)
         if (x!=self.oldX)or(y!=self.oldY):
-            print(x,y)
             self.oldX=x
             self.oldY=y
             for i in range(-1,2):

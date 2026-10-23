@@ -4,6 +4,11 @@ from Square import Square
 from World import World
 from Building import Building
 from Tree import Tree
+import sys
+import time
+allLines=0
+searchedLines=0
+num_of_rays=200
 def draw_player(screen, angle, x=200, y=200, size=15, color=(0,200,0)):
     dx=math.cos(angle)
     dy=math.sin(angle)
@@ -16,6 +21,9 @@ def draw_player(screen, angle, x=200, y=200, size=15, color=(0,200,0)):
     pygame.draw.polygon(screen,color,[tip, left, right])
     
 def intersect_ray_segment(px, py, dx, dy, x1, y1, x2, y2):
+    if "benchmark" in sys.argv:
+        global searchedLines
+        searchedLines+=1
     sx=x2-x1
     sy=y2-y1       
     inter=dx*(-sy)-dy*(-sx)
@@ -36,7 +44,6 @@ def flat_view(surface, player, world):
     width, height = surface.get_size()
     observe= math.radians(70)
     start= player.angle-observe/2
-    num_of_rays= 200
 
     col_width= width/num_of_rays
 
@@ -102,6 +109,7 @@ def main():
     
     
     running = True
+    oldtime=0
     while running:
         dt = clock.tick(60) / 1000
         keys = pygame.key.get_pressed()
@@ -112,13 +120,22 @@ def main():
         world.update(player,dt,keys)
         
         topdown.fill((255, 255, 255))
+        if "benchmark" in sys.argv:
+
+            global allLines
+            allLines+=len(world.activeLinesList)*num_of_rays
+            if time.time()>oldtime+5:
+                oldtime=time.time()
+                print(searchedLines,allLines,searchedLines/allLines)
 
         for (p1, p2) in world.activeLinesList:
             p1=[p1[0]-player.x+200,p1[1]-player.y+200]
             p2=[p2[0]-player.x+200,p2[1]-player.y+200]
             pygame.draw.line(topdown, (0, 0, 0), p1, p2, 2)
-    
+
+        
         draw_player(topdown, player.angle)
+
     
         
 
